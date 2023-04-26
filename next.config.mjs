@@ -8,7 +8,11 @@
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ['images.unsplash.com'],
+    domains: [
+      "images.unsplash.com",
+      "cdn.discordapp.com",
+      "api.multiavatar.com",
+    ],
   },
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you

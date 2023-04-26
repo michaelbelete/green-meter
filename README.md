@@ -1,28 +1,68 @@
-# Create T3 App
+# Green Meter
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Green Meter is a **carbon calculator** designed to estimate your carbon footprint for flights and vehicle travel. The calculator uses real-time carbon emissions data from the [Carbon Interface API](https://docs.carboninterface.com/#/) to provide users with accurate estimates of their carbon emissions.
 
-## What's next? How do I make an app with this?
+## Getting Started
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+To get started with Green Meter, you will need to set up your development environment and configure your environment variables.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+### Prerequisites
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+Before you can set up Green Meter, you will need to have the following software installed on your machine:
 
-## Learn More
+- Node.js
+- PostgreSQL
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+### Installation
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+To install Green Meter, follow these steps:
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+1. Clone the repository to your local machine.
 
-## How do I deploy this?
+   ```bash
+   git clone https://github.com/michaelbelete/green-meter.git
+   ```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+2. Install the project dependencies
+
+   ```bash
+   npm install
+   ```
+
+3. Create a PostgreSQL database and set the `DATABASE_URL` environment variable to the connection string for your database.
+4. Set the necessary environment variables for the project. You can find the required variables in the `.env.example` file.
+5. Setup the database and Seed it with airport information.
+
+   ```bash
+   npx prisma migrate dev
+
+   // incase the seeding does not work automatically
+   npx prisma db seed
+   ```
+
+6. Start the development server.
+
+   ```bash
+   npm run dev
+   ```
+
+## Technologies Used
+
+- Next.js
+- TypeScript
+- Prisma
+- NextAuth
+- trpc
+
+## Contributing
+
+Contributions to the project are welcome! To contribute:
+
+1. Fork the repository to your own account.
+2. Create a new branch for your feature or bug fix.
+3. Make changes to your forked repository.
+4. Submit a pull request to the main repository with a description of your changes.
+
+## License
+
+This project is licensed under the [MIT License](https://github.com/michaelbelete/green-meter/blob/master/LICENSE).

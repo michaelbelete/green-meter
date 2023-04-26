@@ -1,7 +1,9 @@
 {
-  "name": "myapp",
-  "version": "0.1.0",
+  "name": "green-meter",
+  "version": "0.0.1",
   "private": true,
+  "author": "Michael Belete",
+  "description": "Your partner in fighting climate change. Green Meter is a carbon calculator designed to estimate your carbon footprint.",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -9,27 +11,37 @@
     "lint": "next lint",
     "start": "next start"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.5",
     "@prisma/client": "^4.13.0",
     "@radix-ui/react-aspect-ratio": "^1.0.2",
     "@radix-ui/react-avatar": "^1.0.2",
+    "@radix-ui/react-checkbox": "^1.0.3",
     "@radix-ui/react-context-menu": "^2.1.3",
     "@radix-ui/react-dialog": "^1.0.3",
     "@radix-ui/react-dropdown-menu": "^2.0.4",
     "@radix-ui/react-label": "^2.0.1",
     "@radix-ui/react-menubar": "^1.0.2",
     "@radix-ui/react-navigation-menu": "^1.1.2",
+    "@radix-ui/react-popover": "^1.0.5",
     "@radix-ui/react-scroll-area": "^1.0.3",
+    "@radix-ui/react-select": "^1.2.1",
     "@radix-ui/react-separator": "^1.0.2",
+    "@radix-ui/react-switch": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.3",
     "@tanstack/react-query": "^4.28.0",
     "@trpc/client": "^10.18.0",
     "@trpc/next": "^10.18.0",
     "@trpc/react-query": "^10.18.0",
     "@trpc/server": "^10.18.0",
+    "@vercel/analytics": "^1.0.0",
+    "axios": "^1.4.0",
     "class-variance-authority": "^0.5.1",
     "clsx": "^1.2.1",
+    "cmdk": "^0.2.0",
     "lucide-react": "^0.131.0",
     "next": "^13.2.4",
     "next-auth": "^4.21.0",
@@ -42,7 +54,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.21.3",
-    "@types/node": "^18.15.5",
+    "@types/node": "^18.16.3",
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
@@ -56,6 +68,7 @@
     "prettier-plugin-tailwindcss": "^0.2.6",
     "prisma": "^4.13.0",
     "tailwindcss": "^3.3.0",
+    "ts-node": "^10.9.1",
     "typescript": "^5.0.2"
   },
   "ct3aMetadata": {

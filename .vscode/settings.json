@@ -14,5 +14,7 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.parameterHints.enabled": false,
   "editor.detectIndentation": false,
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  "WillLuke.nextjs.addTypesOnSave": true,
+  "WillLuke.nextjs.hasPrompted": true
 }
