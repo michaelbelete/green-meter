@@ -5,7 +5,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
-const Home: NextPage = () => {
+const Home: NextPage = (props) => {
   const { data: sessionData } = useSession();
   const signinUrl = sessionData ? "/app" : "/api/auth/signin?callbackUrl=/app";
 
@@ -71,7 +71,7 @@ const Home: NextPage = () => {
               carbon footprint
             </p>
             <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-              <Link href={signinUrl}>
+              <Link href="/app">
                 <Button size="lg">Get started</Button>
               </Link>
             </div>
