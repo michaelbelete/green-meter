@@ -5,7 +5,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
-const Home: NextPage = (props) => {
+const Home: NextPage = () => {
   const { data: sessionData } = useSession();
   const signinUrl = sessionData ? "/app" : "/api/auth/signin?callbackUrl=/app";
 

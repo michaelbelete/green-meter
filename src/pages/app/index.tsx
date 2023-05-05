@@ -31,7 +31,7 @@ import SearchAirport from "@/components/SearchAirport";
 import { type Airports } from "@prisma/client";
 import EstimationsResult from "@/components/EstimationResult";
 
-const Home: NextPage = () => {
+const Home: NextPage = (props) => {
   const [from, setFrom] = useState<Airports["iata_code"]>();
   const [to, setTo] = useState<Airports["iata_code"]>();
 
@@ -73,7 +73,7 @@ const Home: NextPage = () => {
 
   return (
     <Layout title="Flight Estimation">
-      {isError && (
+      {isError ? (
         <Alert variant="destructive">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>Error</AlertTitle>
@@ -86,9 +86,7 @@ const Home: NextPage = () => {
             </div>
           </AlertDescription>
         </Alert>
-      )}
-
-      {estimationResult?.data ? (
+      ) : estimationResult?.data ? (
         <EstimationsResult estimationResult={estimationResult} reset={reset} />
       ) : (
         <Card>
@@ -107,13 +105,57 @@ const Home: NextPage = () => {
               <div className="flex flex-col items-center gap-2 md:flex-row  md:gap-4 ">
                 <SearchAirport name="from" onChange={setFrom} />
                 <ArrowLeftRightIcon
-                  size={60}
-                  className="mt-8 hidden md:block"
+                  size={50}
+                  className="mt-5 hidden md:block"
                 />
-                <div className="grid w-full  items-center gap-1.5">
+                <div className="grid w-full  items-center gap-2">
                   <SearchAirport name="to" onChange={setTo} />
                 </div>
               </div>
+              <div className="flex flex-col items-center gap-3 md:flex-row md:gap-14 ">
+                <div className="grid w-full  items-center gap-2">
+                  <Label htmlFor="cabin-class">Cabin class</Label>
+                  <Select
+                    required={true}
+                    name="cabinClass"
+                    disabled={isLoading}
+                  >
+                    <SelectTrigger
+                      className="border-slate-600"
+                      id="cabin-class"
+                    >
+                      <SelectValue placeholder="Select your cabin class" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 text-white">
+                      <SelectItem
+                        value="economy"
+                        className="hover:bg-slate-700"
+                      >
+                        Economy
+                      </SelectItem>
+                      <SelectItem
+                        value="premium"
+                        className="hover:bg-slate-700"
+                      >
+                        Premium
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid w-full items-center gap-2">
+                  <Label htmlFor="passenger">Passengers</Label>
+                  <Input
+                    type="number"
+                    id="passengers"
+                    min={1}
+                    name="passengers"
+                    required={true}
+                    placeholder="Enter number of passengers"
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="one-way"
@@ -124,55 +166,13 @@ const Home: NextPage = () => {
                 <label
                   htmlFor="one-way"
                   id="one-way"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   One-Way
                 </label>
               </div>
-              <div className="flex flex-col items-center gap-3 md:flex-row md:gap-14 ">
-                <div className="grid w-full  items-center gap-1.5">
-                  <Label htmlFor="cabin-class" className="text-base sm:text-lg">
-                    Cabin class
-                  </Label>
-                  <Select
-                    required={true}
-                    name="cabinClass"
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger
-                      className="border-slate-600 text-base md:py-6 md:text-xl"
-                      id="cabin-class"
-                    >
-                      <SelectValue placeholder="Select your cabin class" />
-                    </SelectTrigger>
-                    <SelectContent className="text-white">
-                      <SelectItem value="economy">Economy</SelectItem>
-                      <SelectItem value="premium">Premium</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid w-full items-center gap-1.5">
-                  <Label htmlFor="passenger" className="text-base sm:text-lg">
-                    Passengers
-                  </Label>
-                  <Input
-                    type="number"
-                    id="passengers"
-                    min={1}
-                    name="passengers"
-                    required={true}
-                    placeholder="Enter number of passengers"
-                    className="text-base md:py-6 md:text-xl"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
               <div className="mt-2 flex justify-end gap-4">
-                <Button
-                  size="lg"
-                  className="text-semibold text-lg"
-                  disabled={isLoading}
-                >
+                <Button className="text-semibold" disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2Icon className="animate-spin" />

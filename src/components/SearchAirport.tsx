@@ -40,8 +40,8 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
   }, [iataCode, onChange]);
 
   return (
-    <div className="relative grid w-full items-center gap-1.5">
-      <Label htmlFor="from" className="text-base capitalize sm:text-lg">
+    <div className="relative grid w-full items-center gap-2">
+      <Label htmlFor="from" className="capitalize">
         {name}
       </Label>
       <DropdownMenu>
@@ -51,43 +51,45 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
             name={name}
             required={true}
             placeholder={name}
-            className="text-base !opacity-100 md:py-6 md:text-xl"
+            className="!opacity-100"
             value={iataCode}
             disabled={true}
             style={{ cursor: "pointer" }}
           />
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-80">
-          <Input
-            type="search"
-            name="search"
-            required={true}
-            placeholder="Search airports"
-            value={searchQuery}
-            className="w-full text-base font-normal"
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <DropdownMenuSeparator />
-          {isLoading && searchQuery && (
-            <DropdownMenuItem>Loading airports...</DropdownMenuItem>
-          )}
-          {isError && <DropdownMenuItem>{error?.message}</DropdownMenuItem>}
-          {isSuccess && searchResult.length === 0 && (
-            <DropdownMenuItem>No airport found</DropdownMenuItem>
-          )}
-          {isSuccess && searchResult.length > 0 && !isLoading && !error && (
-            <>
-              <DropdownMenuLabel>Search Result</DropdownMenuLabel>
-              {searchResult.map((result, index) => (
-                <DropdownMenuItem
-                  key={index}
-                  onClick={() => setIataCode(result.iata_code)}
-                >
-                  {result.name}
-                </DropdownMenuItem>
-              ))}
-            </>
-          )}
+        <DropdownMenuContent className="border-gray-600 bg-slate-800 !font-sans">
+          <div className="w-full">
+            <Input
+              type="search"
+              name="search"
+              required={true}
+              placeholder="Search airports"
+              value={searchQuery}
+              className="w-full font-normal"
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <DropdownMenuSeparator />
+            {isLoading && searchQuery && (
+              <DropdownMenuItem>Loading airports...</DropdownMenuItem>
+            )}
+            {isError && <DropdownMenuItem>{error?.message}</DropdownMenuItem>}
+            {isSuccess && searchResult.length === 0 && (
+              <DropdownMenuItem>No airport found</DropdownMenuItem>
+            )}
+            {isSuccess && searchResult.length > 0 && !isLoading && !error && (
+              <>
+                <DropdownMenuLabel>Search Result</DropdownMenuLabel>
+                {searchResult.map((result, index) => (
+                  <DropdownMenuItem
+                    key={index}
+                    onClick={() => setIataCode(result.iata_code)}
+                  >
+                    {result.name}
+                  </DropdownMenuItem>
+                ))}
+              </>
+            )}
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

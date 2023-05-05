@@ -176,7 +176,9 @@ const Layout: NextPage<LayoutProps> = ({ title, children }: LayoutProps) => {
               </nav>
               <section className="mt-6 flex flex-col gap-4 md:mt-4">
                 {title && (
-                  <h3 className="text-3xl font-bold tracking-tight">{title}</h3>
+                  <h3 className="text-2xl font-semibold tracking-tight">
+                    {title}
+                  </h3>
                 )}
                 {children}
               </section>
