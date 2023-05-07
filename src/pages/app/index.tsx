@@ -31,7 +31,7 @@ import SearchAirport from "@/components/SearchAirport";
 import { type Airports } from "@prisma/client";
 import EstimationsResult from "@/components/EstimationResult";
 
-const Home: NextPage = (props) => {
+const Home: NextPage = () => {
   const [from, setFrom] = useState<Airports["iata_code"]>();
   const [to, setTo] = useState<Airports["iata_code"]>();
 

@@ -1,14 +1,7 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/utils/api";
+import { PlaneTakeoffIcon, SearchIcon } from "lucide-react";
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 
@@ -21,31 +14,61 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
   name,
   onChange,
 }: SearchAirportProps) => {
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [iataCode, setIataCode] = useState<string>("");
 
   const {
     data: searchResult,
-    error,
-    isSuccess,
-    isError,
-    isLoading,
-  } = api.airport.searchAirports.useQuery(
-    { name: searchQuery },
-    { refetchOnMount: false, enabled: !!searchQuery }
-  );
+    error: searchResultError,
+    isLoading: isSearchResultLoading,
+    isError: isSearchResultError,
+    mutate: searchAirports,
+  } = api.airport.searchAirports.useMutation();
+
+  const {
+    data: suggestedAirports,
+    error: suggestedAirportsError,
+    isError: isSuggestedAirportError,
+    isLoading: isSuggestedAirportLoading,
+  } = api.airport.showRandomAirports.useQuery();
 
   useEffect(() => {
     onChange(iataCode);
   }, [iataCode, onChange]);
 
+  useEffect(() => {
+    const handler: NodeJS.Timeout = setTimeout(() => {
+      searchAirports({
+        name: searchQuery,
+      });
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchAirports, searchQuery]);
+
   return (
-    <div className="relative grid w-full items-center gap-2">
-      <Label htmlFor="from" className="capitalize">
-        {name}
-      </Label>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
+    <>
+      {/* overlay when clicked outside hide the drop down */}
+      <div
+        className={`left-0 top-0 z-10 h-full w-full ${
+          showDropdown ? "absolute" : "hidden"
+        }`}
+        onClick={() => setShowDropdown(false)}
+      />
+
+      <div className="relative grid w-full items-center gap-2">
+        <Label htmlFor="from" className="capitalize">
+          {name}
+        </Label>
+        <button
+          onClick={() => {
+            console.log("clicked");
+            setShowDropdown(!showDropdown);
+          }}
+        >
           <Input
             type="text"
             name={name}
@@ -56,43 +79,75 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
             disabled={true}
             style={{ cursor: "pointer" }}
           />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="border-gray-600 bg-slate-800 !font-sans">
-          <div className="w-full">
+        </button>
+        <div
+          className={`absolute top-[62px] z-20 flex w-full flex-col gap-4 rounded-lg border-gray-600 bg-slate-800    py-4 text-white ${
+            showDropdown ? "" : "hidden"
+          }`}
+        >
+          <div className="px-4">
             <Input
-              type="search"
-              name="search"
-              required={true}
+              type="text"
               placeholder="Search airports"
               value={searchQuery}
               className="w-full font-normal"
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <DropdownMenuSeparator />
-            {isLoading && searchQuery && (
-              <DropdownMenuItem>Loading airports...</DropdownMenuItem>
-            )}
-            {isError && <DropdownMenuItem>{error?.message}</DropdownMenuItem>}
-            {isSuccess && searchResult.length === 0 && (
-              <DropdownMenuItem>No airport found</DropdownMenuItem>
-            )}
-            {isSuccess && searchResult.length > 0 && !isLoading && !error && (
-              <>
-                <DropdownMenuLabel>Search Result</DropdownMenuLabel>
-                {searchResult.map((result, index) => (
-                  <DropdownMenuItem
-                    key={index}
-                    onClick={() => setIataCode(result.iata_code)}
-                  >
-                    {result.name}
-                  </DropdownMenuItem>
-                ))}
-              </>
-            )}
           </div>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+          <ul className="flex flex-col gap-1">
+            {searchQuery ? (
+              isSearchResultError ? (
+                <li className="px-4">{searchResultError.message}</li>
+              ) : isSearchResultLoading ? (
+                <li className="px-4">Searching...</li>
+              ) : searchResult && searchResult.length === 0 ? (
+                <li className="px-4">
+                  Oops! Can&apos;t find the airport you are looking for
+                </li>
+              ) : (
+                searchResult &&
+                searchResult.map((airport, index) => (
+                  <li
+                    className="flex cursor-pointer gap-2 px-4 py-1 hover:bg-slate-700"
+                    key={index}
+                    onClick={() => {
+                      setIataCode(airport.iata_code);
+                      setShowDropdown(false);
+                      setSearchQuery("");
+                    }}
+                  >
+                    <SearchIcon />
+                    <span>{airport.name}</span>
+                  </li>
+                ))
+              )
+            ) : isSuggestedAirportLoading ? (
+              <li className="px-4">Loading...</li>
+            ) : isSuggestedAirportError ? (
+              <li className="px-4">{suggestedAirportsError.message}</li>
+            ) : suggestedAirports && suggestedAirports.length === 0 ? (
+              <li className="px-4">Can&apos;t find the airport</li>
+            ) : (
+              suggestedAirports &&
+              suggestedAirports.map((airport, index) => (
+                <li
+                  className="flex cursor-pointer gap-2 px-4 py-1 hover:bg-slate-700"
+                  key={index}
+                  onClick={() => {
+                    setIataCode(airport.iata_code);
+                    setShowDropdown(false);
+                    setSearchQuery("");
+                  }}
+                >
+                  <PlaneTakeoffIcon />
+                  <span>{airport.name}</span>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+      </div>
+    </>
   );
 };
 

@@ -182,14 +182,13 @@ const Layout: NextPage<LayoutProps> = ({ title, children }: LayoutProps) => {
                 )}
                 {children}
               </section>
-              <div className="pt-8">
+              <div className="absolute bottom-4 left-1/2 justify-center pt-8">
                 <Link
                   href="https://www.linkedin.com/in/michael-belete-8600a3176/"
                   target="_blank"
+                  className="text-center hover:underline"
                 >
-                  <Button variant="link" size="sm" className="mb-2 w-full">
-                    &copy; 2023 Michael Belete
-                  </Button>
+                  &copy; 2023 Michael Belete
                 </Link>
               </div>
             </div>

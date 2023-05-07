@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -12,7 +11,7 @@ import {
   calculateFlightDuration,
   convertKilometersToMiles,
 } from "@/utils/flight";
-import { ChevronLeftIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 import Link from "next/link";
 import type { FunctionComponent } from "react";
 type EstimationsResultProps = {
@@ -74,12 +73,6 @@ const EstimationsResult: FunctionComponent<EstimationsResultProps> = ({
             </li>
           </ul>
         </CardContent>
-        <CardFooter>
-          <Button className="pr-4 text-sm" size="sm" onClick={reset}>
-            <ChevronLeftIcon />
-            &nbsp;Go back
-          </Button>
-        </CardFooter>
       </Card>
 
       <Link
