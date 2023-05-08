@@ -146,17 +146,17 @@ const Layout: NextPage<LayoutProps> = ({ title, children }: LayoutProps) => {
                         <ChevronDown />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuContent className="w-56 bg-slate-900 text-white">
+                      <DropdownMenuLabel className="text-white">
+                        My Account
+                      </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <button
-                          onClick={() => void signOut()}
-                          className="flex cursor-pointer items-center gap-2"
-                        >
-                          <LogOutIcon className="w-5" />
-                          <p>Sign out</p>
-                        </button>
+                      <DropdownMenuItem
+                        onClick={() => void signOut()}
+                        className="flex cursor-pointer items-center gap-2 hover:bg-slate-800"
+                      >
+                        <LogOutIcon className="w-5" />
+                        <p>Sign out</p>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
