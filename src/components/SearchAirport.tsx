@@ -24,13 +24,11 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
     data: searchResults,
     error: searchResultError,
     isLoading: isSearchResultLoading,
-    isError: isSearchResultError,
   } = api.airport.searchAirports.useQuery({ name: searchTerm, limit: 8 });
 
   const {
     data: suggestedAirports,
     error: suggestedAirportsError,
-    isError: isSuggestedAirportError,
     isLoading: isSuggestedAirportLoading,
   } = api.airport.showRandomAirports.useQuery();
 
@@ -143,7 +141,7 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
               : renderAirportList({
                   airports: suggestedAirports,
                   error: suggestedAirportsError,
-                  isLoading: isSearchResultLoading,
+                  isLoading: isSuggestedAirportLoading,
                 })}
           </ul>
         </div>
