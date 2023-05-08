@@ -3,28 +3,29 @@ import { Label } from "@/components/ui/label";
 import { api } from "@/utils/api";
 import { PlaneTakeoffIcon, SearchIcon } from "lucide-react";
 import type { NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import debounce from "lodash.debounce";
+import { type Airports } from "@prisma/client";
 
 type SearchAirportProps = {
   name: string;
-  onChange: (value: string) => void;
+  onClick: (value: string) => void;
 };
 
 const SearchAirport: NextPage<SearchAirportProps> = ({
   name,
-  onChange,
+  onClick,
 }: SearchAirportProps) => {
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [iataCode, setIataCode] = useState<string>("");
 
   const {
-    data: searchResult,
+    data: searchResults,
     error: searchResultError,
     isLoading: isSearchResultLoading,
     isError: isSearchResultError,
-    mutate: searchAirports,
-  } = api.airport.searchAirports.useMutation();
+  } = api.airport.searchAirports.useQuery({ name: searchTerm, limit: 8 });
 
   const {
     data: suggestedAirports,
@@ -33,21 +34,59 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
     isLoading: isSuggestedAirportLoading,
   } = api.airport.showRandomAirports.useQuery();
 
-  useEffect(() => {
-    onChange(iataCode);
-  }, [iataCode, onChange]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
 
   useEffect(() => {
-    const handler: NodeJS.Timeout = setTimeout(() => {
-      searchAirports({
-        name: searchQuery,
-      });
-    }, 300);
-
     return () => {
-      clearTimeout(handler);
+      debouncedResults.cancel();
     };
-  }, [searchAirports, searchQuery]);
+  });
+
+  const debouncedResults = useMemo(() => {
+    return debounce(handleChange, 300);
+  }, []);
+
+  type renderAirportListProp = {
+    airports: Airports[] | undefined;
+    isLoading: boolean;
+    error: typeof searchResultError;
+  };
+
+  const renderAirportList = (props: renderAirportListProp) => {
+    const { isLoading, error, airports } = props;
+
+    if (isLoading) {
+      return <li className="px-4">Searching...</li>;
+    }
+
+    if (error) {
+      return <li className="px-4">{error.message}</li>;
+    }
+
+    if (!airports) return;
+
+    if (airports.length === 0) {
+      return <li className="px-4">No airport found</li>;
+    }
+
+    return airports.map((airport, index) => (
+      <li
+        className="flex cursor-pointer gap-2 px-4 py-1 hover:bg-slate-700"
+        key={index}
+        onClick={() => {
+          onClick(airport.iata_code);
+          setIataCode(airport.iata_code);
+          setShowDropdown(false);
+          setSearchTerm("");
+        }}
+      >
+        <PlaneTakeoffIcon />
+        <span>{airport.name}</span>
+      </li>
+    ));
+  };
 
   return (
     <>
@@ -64,6 +103,7 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
           {name}
         </Label>
         <button
+          type="button"
           onClick={() => {
             console.log("clicked");
             setShowDropdown(!showDropdown);
@@ -89,61 +129,22 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
             <Input
               type="text"
               placeholder="Search airports"
-              value={searchQuery}
               className="w-full font-normal"
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={debouncedResults}
             />
           </div>
           <ul className="flex flex-col gap-1">
-            {searchQuery ? (
-              isSearchResultError ? (
-                <li className="px-4">{searchResultError.message}</li>
-              ) : isSearchResultLoading ? (
-                <li className="px-4">Searching...</li>
-              ) : searchResult && searchResult.length === 0 ? (
-                <li className="px-4">
-                  Oops! Can&apos;t find the airport you are looking for
-                </li>
-              ) : (
-                searchResult &&
-                searchResult.map((airport, index) => (
-                  <li
-                    className="flex cursor-pointer gap-2 px-4 py-1 hover:bg-slate-700"
-                    key={index}
-                    onClick={() => {
-                      setIataCode(airport.iata_code);
-                      setShowDropdown(false);
-                      setSearchQuery("");
-                    }}
-                  >
-                    <SearchIcon />
-                    <span>{airport.name}</span>
-                  </li>
-                ))
-              )
-            ) : isSuggestedAirportLoading ? (
-              <li className="px-4">Loading...</li>
-            ) : isSuggestedAirportError ? (
-              <li className="px-4">{suggestedAirportsError.message}</li>
-            ) : suggestedAirports && suggestedAirports.length === 0 ? (
-              <li className="px-4">Can&apos;t find the airport</li>
-            ) : (
-              suggestedAirports &&
-              suggestedAirports.map((airport, index) => (
-                <li
-                  className="flex cursor-pointer gap-2 px-4 py-1 hover:bg-slate-700"
-                  key={index}
-                  onClick={() => {
-                    setIataCode(airport.iata_code);
-                    setShowDropdown(false);
-                    setSearchQuery("");
-                  }}
-                >
-                  <PlaneTakeoffIcon />
-                  <span>{airport.name}</span>
-                </li>
-              ))
-            )}
+            {searchTerm
+              ? renderAirportList({
+                  airports: searchResults,
+                  error: searchResultError,
+                  isLoading: isSearchResultLoading,
+                })
+              : renderAirportList({
+                  airports: suggestedAirports,
+                  error: suggestedAirportsError,
+                  isLoading: isSearchResultLoading,
+                })}
           </ul>
         </div>
       </div>

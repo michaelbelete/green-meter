@@ -18,7 +18,7 @@ export const airportRouter = createTRPCRouter({
         limit: z.number().default(10),
       })
     )
-    .mutation(async ({ input, ctx }) => {
+    .query(async ({ input, ctx }) => {
       const airports = await ctx.prisma.airports.findMany({
         take: input.limit,
         where: {

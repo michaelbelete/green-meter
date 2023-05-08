@@ -103,13 +103,13 @@ const Home: NextPage = () => {
               onSubmit={(e) => void estimateFlightEmission(e)}
             >
               <div className="flex flex-col items-center gap-2 md:flex-row  md:gap-4 ">
-                <SearchAirport name="from" onChange={setFrom} />
+                <SearchAirport name="from" onClick={setFrom} />
                 <ArrowLeftRightIcon
                   size={50}
                   className="mt-5 hidden md:block"
                 />
                 <div className="grid w-full  items-center gap-2">
-                  <SearchAirport name="to" onChange={setTo} />
+                  <SearchAirport name="to" onClick={setTo} />
                 </div>
               </div>
               <div className="flex flex-col items-center gap-3 md:flex-row md:gap-14 ">
