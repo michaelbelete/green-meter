@@ -1,5 +1,5 @@
-import Layout from "@/components/Layout";
-import SearchVehicleModel from "@/components/SearchVehicleModel";
+import Layout from "@/components/layout";
+import SearchVehicleModel from "@/components/search-vehicle-model";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {

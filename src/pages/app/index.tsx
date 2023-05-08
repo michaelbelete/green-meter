@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import Layout from "@/components/Layout";
+import Layout from "@/components/layout";
 import {
   Card,
   CardContent,
@@ -27,9 +27,9 @@ import {
 import { useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { api } from "@/utils/api";
-import SearchAirport from "@/components/SearchAirport";
+import SearchAirport from "@/components/search-airport";
 import { type Airports } from "@prisma/client";
-import EstimationsResult from "@/components/EstimationResult";
+import EstimationsResult from "@/components/estimation-result";
 
 const Home: NextPage = () => {
   const [from, setFrom] = useState<Airports["iata_code"]>();

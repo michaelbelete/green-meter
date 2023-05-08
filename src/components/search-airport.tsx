@@ -56,7 +56,7 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
     const { isLoading, error, airports } = props;
 
     if (isLoading) {
-      return <li className="px-4">Searching...</li>;
+      return <li className="px-4">Loading...</li>;
     }
 
     if (error) {
