@@ -78,11 +78,9 @@ const EstimationsResult: FunctionComponent<EstimationsResultProps> = ({
       <Link
         href="https://www.icao.int/environmental-protection/CarbonOffset/Documents/Methodology%20ICAO%20Carbon%20Calculator_v11-2018.pdf"
         target="_blank"
-        className="mt-4"
+        className="mt-4 hover:underline"
       >
-        <Button variant="link" className="text-sm">
-          Learn more about&nbsp;carbon emissions calculator methodology
-        </Button>
+        Learn more about&nbsp;carbon emissions calculator methodology
       </Link>
     </>
   );
