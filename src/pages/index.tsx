@@ -26,12 +26,12 @@ const Home: NextPage = () => {
               <Link href="/" className="flex cursor-pointer items-center">
                 <div className="flex cursor-pointer items-center gap-2 text-white">
                   <Image
-                    src="/image/logo-icon.png"
+                    src="/image/logo-icon.svg"
                     alt="green-meter"
                     width={35}
                     height={35}
                   />
-                  <div className="font-bold">Green Meter</div>
+                  <div className="text-lg font-semibold">Green Meter</div>
                 </div>
               </Link>
             </div>
@@ -62,7 +62,12 @@ const Home: NextPage = () => {
         </nav>
         <main className="flex items-center justify-center px-4 text-center sm:px-8 ">
           <div className="mt-20 flex max-w-[980px] flex-col items-center justify-center gap-4 text-center">
-            <Image src="/image/logo.png" alt="logo" width={200} height={200} />
+            <Image
+              src="/image/logo-icon.svg"
+              alt="logo"
+              width={200}
+              height={100}
+            />
             <h1 className="text-2xl font-extrabold leading-tight tracking-tighter text-white md:text-4xl lg:text-5xl lg:leading-[1.1]">
               Your partner in fighting climate change
             </h1>

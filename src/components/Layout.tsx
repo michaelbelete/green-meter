@@ -90,16 +90,18 @@ const Layout: NextPage<LayoutProps> = ({ title, children }: LayoutProps) => {
                 <XIcon className="h-auto w-8" />
               </Button>
             </div>
-            <div className="flex items-center justify-center px-8 py-6">
-              <Link href="/app">
-                <Image
-                  src="/image/logo-icon.png"
-                  width="120"
-                  height="100"
-                  alt="green-meter"
-                />
-              </Link>
-            </div>
+            <Link
+              href="/app"
+              className="mt-6 flex items-center gap-2 py-6 md:mt-0"
+            >
+              <Image
+                src="/image/logo-icon.svg"
+                width="40"
+                height="40"
+                alt="green-meter"
+              />
+              <span className="font-semibold">Green Meter</span>
+            </Link>
             <div className="w-full px-3">
               {navList.map((item) => (
                 <Link href={item.href} key={item.name}>
