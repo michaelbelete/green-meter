@@ -82,14 +82,11 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
   useEffect(() => {
     if (vehicleMakesResponse) {
       if (searchVehicleManufacturer !== "") {
-        console.log(searchVehicleManufacturer);
         const filteredVehicleMakes = vehicleMakesResponse.filter((vehicle) => {
           return vehicle.data.attributes.name
             .toLowerCase()
             .includes(searchVehicleManufacturer.toLowerCase());
         });
-
-        console.log("filter", filteredVehicleMakes);
 
         setVehicleMakes(filteredVehicleMakes.slice(0, 10));
       } else {

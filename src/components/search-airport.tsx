@@ -1,11 +1,12 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/utils/api";
-import { PlaneTakeoffIcon, SearchIcon } from "lucide-react";
+import { PlaneTakeoffIcon } from "lucide-react";
 import type { NextPage } from "next";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import debounce from "lodash.debounce";
 import { type Airports } from "@prisma/client";
+import Dropdown, { type DropdownRef } from "@/components/dropdown";
 
 type SearchAirportProps = {
   name: string;
@@ -16,9 +17,10 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
   name,
   onClick,
 }: SearchAirportProps) => {
-  const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [iataCode, setIataCode] = useState<string>("");
+
+  const dropdownRef = useRef<DropdownRef>(null);
 
   const {
     data: searchResults,
@@ -47,7 +49,7 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
   }, []);
 
   type renderAirportListProp = {
-    airports: Airports[] | undefined;
+    airports?: Airports[];
     isLoading: boolean;
     error: typeof searchResultError;
   };
@@ -69,15 +71,15 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
       return <li className="px-4">No airport found</li>;
     }
 
-    return airports.map((airport, index) => (
+    return airports.map((airport) => (
       <li
         className="flex cursor-pointer gap-2 px-4 py-1 hover:bg-slate-700"
-        key={index}
+        key={airport.id}
         onClick={() => {
           onClick(airport.iata_code);
           setIataCode(airport.iata_code);
-          setShowDropdown(false);
           setSearchTerm("");
+          dropdownRef.current?.close();
         }}
       >
         <PlaneTakeoffIcon />
@@ -87,26 +89,13 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
   };
 
   return (
-    <>
-      {/* overlay when clicked outside hide the drop down */}
-      <div
-        className={`left-0 top-0 z-10 h-full w-full ${
-          showDropdown ? "absolute" : "hidden"
-        }`}
-        onClick={() => setShowDropdown(false)}
-      />
-
-      <div className="relative grid w-full items-center gap-2">
-        <Label htmlFor="from" className="capitalize">
-          {name}
-        </Label>
-        <button
-          type="button"
-          onClick={() => {
-            console.log("clicked");
-            setShowDropdown(!showDropdown);
-          }}
-        >
+    <Dropdown
+      ref={dropdownRef}
+      trigger={
+        <>
+          <Label htmlFor={name} className="capitalize">
+            {name}
+          </Label>
           <Input
             type="text"
             name={name}
@@ -117,36 +106,31 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
             disabled={true}
             style={{ cursor: "pointer" }}
           />
-        </button>
-        <div
-          className={`absolute top-[62px] z-20 flex w-full flex-col gap-4 rounded-lg border-gray-600 bg-slate-800    py-4 text-white ${
-            showDropdown ? "" : "hidden"
-          }`}
-        >
-          <div className="px-4">
-            <Input
-              type="text"
-              placeholder="Search airports"
-              className="w-full font-normal"
-              onChange={debouncedResults}
-            />
-          </div>
-          <ul className="flex flex-col gap-1">
-            {searchTerm
-              ? renderAirportList({
-                  airports: searchResults,
-                  error: searchResultError,
-                  isLoading: isSearchResultLoading,
-                })
-              : renderAirportList({
-                  airports: suggestedAirports,
-                  error: suggestedAirportsError,
-                  isLoading: isSuggestedAirportLoading,
-                })}
-          </ul>
-        </div>
+        </>
+      }
+    >
+      <div className="px-4">
+        <Input
+          type="text"
+          placeholder="Search airports"
+          className="w-full font-normal"
+          onChange={debouncedResults}
+        />
       </div>
-    </>
+      <ul className="flex flex-col gap-1">
+        {searchTerm
+          ? renderAirportList({
+              airports: searchResults,
+              error: searchResultError,
+              isLoading: isSearchResultLoading,
+            })
+          : renderAirportList({
+              airports: suggestedAirports,
+              error: suggestedAirportsError,
+              isLoading: isSuggestedAirportLoading,
+            })}
+      </ul>
+    </Dropdown>
   );
 };
 
