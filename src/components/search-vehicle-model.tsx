@@ -1,31 +1,14 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import Dropdown, { type DropdownRef } from "@/components/dropdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { api } from "@/utils/api";
-import {
-  type VehicleModelResponse,
-  type VehicleMake,
-  type VehicleMakeResponse,
-} from "@/utils/vehicle";
+import { CarIcon, FactoryIcon } from "lucide-react";
 import { type NextPage } from "next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
+import debounce from "lodash.debounce";
 
 type SearchVehicleModelProps = {
-  onChange: (value: string) => void;
+  onClick: (value: string) => void;
 };
 
 type selectedVehicleMake = {
@@ -33,25 +16,33 @@ type selectedVehicleMake = {
   name: string;
 };
 
+type selectedVehicleModel = {
+  id: string;
+  name: string;
+};
+
 const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
-  onChange,
+  onClick,
 }: SearchVehicleModelProps) => {
+  const vehicleManufacturerRef = useRef<DropdownRef>(null);
+  const vehicleModelRef = useRef<DropdownRef>(null);
+
   const [selectedVehicleMake, setSelectedVehicleMake] =
     useState<selectedVehicleMake>();
-  const [selectedVehicleModel, setSelectedVehicleModel] = useState<string>("");
-
+  const [selectedVehicleModel, setSelectedVehicleModel] =
+    useState<selectedVehicleModel>();
   const [searchVehicleManufacturer, setSearchVehicleManufacturer] =
     useState<string>("");
-
-  const [vehicleMakes, setVehicleMakes] = useState<VehicleMakeResponse>([]);
-  const [vehicleModels, setVehicleModels] = useState<VehicleModelResponse>([]);
+  const [searchVehicleModel, setSearchVehicleModel] = useState<string>("");
 
   const {
-    data: vehicleMakesResponse,
+    data: vehicleMakesResult,
     isLoading: isLoadingVehicleMake,
     isError: isErrorVehicleMake,
-    error: errorVehicle,
-  } = api.vehicle.getVehicleMakes.useQuery();
+    error: errorVehicleMake,
+  } = api.vehicle.searchVehicleMakes.useQuery({
+    name: searchVehicleManufacturer,
+  });
 
   const {
     data: vehicleModelsResponse,
@@ -60,53 +51,100 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
     error: errorVehicleModel,
     mutate: mutateVehicleModel,
     reset: resetVehicleModel,
-    isSuccess: isSuccessVehicleModel,
   } = api.vehicle.getVehicleModels.useMutation();
 
-  useEffect(() => {
-    onChange(selectedVehicleModel);
-  }, [selectedVehicleModel, onChange]);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchVehicleManufacturer(e.target.value);
+  };
+
+  const debouncedVehicleMakeResults = useMemo(() => {
+    return debounce(handleChange, 300);
+  }, []);
 
   useEffect(() => {
-    if (vehicleMakesResponse) {
-      setVehicleMakes(vehicleMakesResponse.slice(0, 10));
+    return () => {
+      debouncedVehicleMakeResults.cancel();
+    };
+  });
+
+  const renderVehicleManufacturer = () => {
+    if (isLoadingVehicleMake) {
+      return <li className="px-4">Loading...</li>;
     }
-  }, [vehicleMakesResponse]);
 
-  useEffect(() => {
-    if (vehicleModelsResponse) {
-      setVehicleModels(vehicleModelsResponse.slice(0, 10));
+    if (isErrorVehicleMake) {
+      return <li className="px-4">{errorVehicleMake.message}</li>;
     }
-  }, [vehicleModelsResponse]);
 
-  useEffect(() => {
-    if (vehicleMakesResponse) {
-      if (searchVehicleManufacturer !== "") {
-        const filteredVehicleMakes = vehicleMakesResponse.filter((vehicle) => {
-          return vehicle.data.attributes.name
+    if (vehicleMakesResult.length === 0) {
+      return <li className="px-4">Can not find the manufacturer</li>;
+    }
+
+    return vehicleMakesResult.slice(0, 8).map((vehicle) => (
+      <li
+        className="flex cursor-pointer items-center gap-2 px-5 py-1 text-sm hover:bg-slate-700"
+        key={vehicle.data.id}
+        onClick={() => {
+          resetVehicleModel();
+          setSelectedVehicleModel(undefined);
+          setSelectedVehicleMake({
+            id: vehicle.data.id,
+            name: vehicle.data.attributes.name,
+          });
+          mutateVehicleModel({
+            vehicle_make_id: vehicle.data.id,
+          });
+          vehicleManufacturerRef.current?.close();
+        }}
+      >
+        <FactoryIcon />
+        <span>{vehicle.data.attributes.name}</span>
+      </li>
+    ));
+  };
+
+  const renderVehicleModel = () => {
+    if (isLoadingVehicleModel) {
+      return <li className="px-4">Loading...</li>;
+    }
+
+    if (isErrorVehicleModel) {
+      return <li className="px-4">{errorVehicleModel.message}</li>;
+    }
+
+    if (!vehicleModelsResponse) return;
+
+    const vehicleModels = searchVehicleModel
+      ? vehicleModelsResponse.filter((vehicle) =>
+          vehicle.data.attributes.name
             .toLowerCase()
-            .includes(searchVehicleManufacturer.toLowerCase());
-        });
+            .includes(searchVehicleModel.toLowerCase())
+        )
+      : vehicleModelsResponse;
 
-        setVehicleMakes(filteredVehicleMakes.slice(0, 10));
-      } else {
-        setVehicleMakes(vehicleMakesResponse.slice(0, 10));
-      }
+    if (vehicleModels.length === 0) {
+      return <li className="px-4">Can not find the model</li>;
     }
-  }, [searchVehicleManufacturer, vehicleMakesResponse]);
 
-  const selectVehicleMake = (vehicle: VehicleMake) => {
-    resetVehicleModel();
-    setSelectedVehicleModel("");
-
-    setSelectedVehicleMake({
-      id: vehicle.data.id,
-      name: vehicle.data.attributes.name,
-    });
-
-    mutateVehicleModel({
-      vehicle_make_id: vehicle.data.id,
-    });
+    return vehicleModels.slice(0, 8).map((vehicle) => (
+      <li
+        className="flex cursor-pointer items-center gap-2 px-4 py-1 text-sm hover:bg-slate-700"
+        key={vehicle.data.id}
+        onClick={() => {
+          setSelectedVehicleModel({
+            id: vehicle.data.id,
+            name: vehicle.data.attributes.name,
+          });
+          onClick(vehicle.data.id);
+          vehicleModelRef.current?.close();
+        }}
+      >
+        <CarIcon />
+        <span>
+          {vehicle.data.attributes.year} {vehicle.data.attributes.name}
+        </span>
+      </li>
+    ));
   };
 
   return (
@@ -115,92 +153,65 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
         selectedVehicleMake ? "flex flex-col gap-2 md:flex-row md:gap-4" : ""
       }`}
     >
-      <div className="relative grid w-full items-center gap-1.5">
-        <Label htmlFor="vehicle-model" className="text-base sm:text-lg">
-          Your vehicle manufacturer
-        </Label>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger>
+      <Dropdown
+        ref={vehicleManufacturerRef}
+        trigger={
+          <>
+            <Label htmlFor="vehicle-model">Your vehicle manufacturer</Label>
             <Input
               type="text"
               name="vehicle-manufacturer"
               required={true}
               placeholder="Vehicle manufacturer"
-              className="text-base !opacity-100 md:py-6 md:text-xl"
+              className="!opacity-100"
               value={selectedVehicleMake?.name}
               disabled={true}
               style={{ cursor: "pointer" }}
             />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-64 text-sm md:w-96">
-            <Input
-              type="search"
-              name="search"
-              required={true}
-              placeholder="Search Vehicle Manufacturer"
-              value={searchVehicleManufacturer}
-              className="w-full text-base font-normal"
-              onChange={(e) => setSearchVehicleManufacturer(e.target.value)}
-            />
-            <DropdownMenuSeparator />
-            <DropdownMenuLabel className="font-semibold">
-              Suggested Manufacturer
-            </DropdownMenuLabel>
-            {isLoadingVehicleMake ? (
-              <DropdownMenuItem>Loading Vehicle Manufacturer</DropdownMenuItem>
-            ) : isErrorVehicleMake ? (
-              <DropdownMenuItem>{errorVehicle.message}</DropdownMenuItem>
-            ) : vehicleMakes.length === 0 ? (
-              <DropdownMenuItem>Can not find the manufacturer</DropdownMenuItem>
-            ) : (
-              vehicleMakes.slice(0, 5).map((vehicle) => (
-                <DropdownMenuItem
-                  key={vehicle.data.id}
-                  onClick={() => void selectVehicleMake(vehicle)}
-                >
-                  {vehicle.data.attributes.name}
-                </DropdownMenuItem>
-              ))
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+          </>
+        }
+      >
+        <div className="px-4">
+          <Input
+            type="search"
+            placeholder="Search Vehicle Manufacturer"
+            className="w-full font-normal"
+            onChange={debouncedVehicleMakeResults}
+          />
+        </div>
+        <ul className="flex flex-col gap-1">{renderVehicleManufacturer()}</ul>
+      </Dropdown>
 
       {selectedVehicleMake && (
-        <div className="relative grid w-full items-center gap-1.5">
-          <Label htmlFor="vehicle-model" className="text-base sm:text-lg">
-            Your Vehicle Model
-          </Label>
-
-          {isLoadingVehicleModel && (
-            <p className="mt-2">getting vehicle models...</p>
-          )}
-
-          {isErrorVehicleModel && (
-            <p className="mt-2">{errorVehicleModel.message}</p>
-          )}
-
-          {isSuccessVehicleModel && (
-            <Select
-              value={selectedVehicleModel}
-              onValueChange={(value) => setSelectedVehicleModel(value)}
+        <Dropdown
+          ref={vehicleModelRef}
+          trigger={
+            <>
+              <Label htmlFor="vehicle-model">Your vehicle model</Label>
+              <Input
+                type="text"
+                name="vehicle-model"
+                required={true}
+                placeholder="Vehicle model"
+                className="!opacity-100"
+                value={selectedVehicleModel?.name}
+                disabled={true}
+                style={{ cursor: "pointer" }}
+              />
+            </>
+          }
+        >
+          <div className="px-4">
+            <Input
               required={true}
-            >
-              <SelectTrigger className="border-slate-600 text-base md:py-6 md:text-xl">
-                <SelectValue placeholder="Vehicle Model" />
-              </SelectTrigger>
-              <SelectContent className="bg-white text-sm">
-                <SelectItem value="">Select Vehicle Model</SelectItem>
-                {vehicleModels.map((vehicle) => (
-                  <SelectItem value={vehicle.data.id} key={vehicle.data.id}>
-                    {vehicle.data.attributes.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-        </div>
+              placeholder="Search Vehicle Model"
+              value={searchVehicleModel}
+              className="w-full font-normal"
+              onChange={(e) => setSearchVehicleModel(e.target.value)}
+            />
+          </div>
+          <ul className="flex flex-col gap-1">{renderVehicleModel()}</ul>
+        </Dropdown>
       )}
     </div>
   );

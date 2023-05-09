@@ -38,15 +38,15 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
     setSearchTerm(e.target.value);
   };
 
+  const debouncedResults = useMemo(() => {
+    return debounce(handleChange, 300);
+  }, []);
+
   useEffect(() => {
     return () => {
       debouncedResults.cancel();
     };
   });
-
-  const debouncedResults = useMemo(() => {
-    return debounce(handleChange, 300);
-  }, []);
 
   type renderAirportListProp = {
     airports?: Airports[];

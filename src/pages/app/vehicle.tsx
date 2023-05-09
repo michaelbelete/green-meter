@@ -122,7 +122,7 @@ const Vehicle: NextPage = () => {
               className="flex flex-col gap-4"
             >
               <SearchVehicleModel
-                onChange={(value) => setSelectedVehicleModel(value)}
+                onClick={(value) => setSelectedVehicleModel(value)}
               />
               <div className="flex flex-col gap-3">
                 <Label className="text-base sm:text-lg">
