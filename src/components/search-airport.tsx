@@ -58,22 +58,22 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
     const { isLoading, error, airports } = props;
 
     if (isLoading) {
-      return <li className="px-4">Loading...</li>;
+      return <li className="px-4 text-sm">Loading...</li>;
     }
 
     if (error) {
-      return <li className="px-4">{error.message}</li>;
+      return <li className="px-4 text-sm">{error.message}</li>;
     }
 
     if (!airports) return;
 
     if (airports.length === 0) {
-      return <li className="px-4">No airport found</li>;
+      return <li className="px-4 text-sm">No airport found</li>;
     }
 
     return airports.map((airport) => (
       <li
-        className="flex cursor-pointer gap-2 px-4 py-1 hover:bg-slate-700"
+        className="flex cursor-pointer items-center gap-2 px-4 py-1 text-sm hover:bg-slate-700"
         key={airport.id}
         onClick={() => {
           onClick(airport.iata_code);

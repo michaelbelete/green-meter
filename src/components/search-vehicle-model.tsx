@@ -69,15 +69,15 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
 
   const renderVehicleManufacturer = () => {
     if (isLoadingVehicleMake) {
-      return <li className="px-4">Loading...</li>;
+      return <li className="px-4 text-sm">Loading...</li>;
     }
 
     if (isErrorVehicleMake) {
-      return <li className="px-4">{errorVehicleMake.message}</li>;
+      return <li className="px-4 text-sm">{errorVehicleMake.message}</li>;
     }
 
     if (vehicleMakesResult.length === 0) {
-      return <li className="px-4">Can not find the manufacturer</li>;
+      return <li className="px-4 text-sm">Can not find the manufacturer</li>;
     }
 
     return vehicleMakesResult.slice(0, 8).map((vehicle) => (
