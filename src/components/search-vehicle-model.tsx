@@ -203,7 +203,6 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
         >
           <div className="px-4">
             <Input
-              required={true}
               placeholder="Search Vehicle Model"
               value={searchVehicleModel}
               className="w-full font-normal"

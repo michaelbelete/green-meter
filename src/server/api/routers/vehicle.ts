@@ -7,13 +7,6 @@ import {
 
 // create a realtime procedure that search airports from prisma
 export const vehicleRouter = createTRPCRouter({
-  getVehicleMakes: publicProcedure.query(async ({ ctx }) => {
-    const { data } = await ctx.carbonClient.get<VehicleMakeResponse>(
-      "/vehicle_makes"
-    );
-
-    return data;
-  }),
   searchVehicleMakes: publicProcedure
     .input(
       z.object({
@@ -49,27 +42,5 @@ export const vehicleRouter = createTRPCRouter({
       );
 
       return data;
-    }),
-  searchVehicleModels: publicProcedure
-    .input(
-      z.object({
-        vehicle_make_id: z.string(),
-        name: z.string(),
-      })
-    )
-    .query(async ({ input, ctx }) => {
-      const { vehicle_make_id, name } = input;
-
-      const { data } = await ctx.carbonClient.get<VehicleModelResponse>(
-        `/vehicle_makes/${vehicle_make_id}/vehicle_models`
-      );
-
-      const filteredData = data.filter((vehicle) => {
-        return vehicle.data.attributes.name
-          .toLowerCase()
-          .includes(name.toLowerCase());
-      });
-
-      return filteredData;
     }),
 });

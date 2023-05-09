@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -21,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/utils/api";
-import { CarIcon, ChevronLeftIcon, Loader2Icon, XIcon } from "lucide-react";
+import { CarIcon, Loader2Icon, XIcon } from "lucide-react";
 import { type NextPage } from "next";
 import { useState } from "react";
 
@@ -77,7 +76,7 @@ const Vehicle: NextPage = () => {
       {estimatedEmission?.data ? (
         <Card className="relative">
           <CardHeader>
-            <CardDescription className="text-lg md:text-xl">
+            <CardDescription className="font-semibold">
               A&nbsp;{estimatedEmission.data.attributes.distance_value}{" "}
               {estimatedEmission.data.attributes.distance_unit === "mi"
                 ? "Miles"
@@ -85,7 +84,7 @@ const Vehicle: NextPage = () => {
               trip with a{" "}
               <u>{estimatedEmission.data.attributes.vehicle_model}</u>
             </CardDescription>
-            <CardTitle className="pt-2 font-normal leading-normal md:text-2xl">
+            <CardTitle className="pt-2 text-base font-normal md:pt-0 md:text-lg">
               Your estimated carbon dioxide emission for your trip is{" "}
               <b className="font-semibold underline">
                 {estimatedEmission.data.attributes.carbon_kg} Kilogram(Kg) /{" "}
@@ -100,12 +99,6 @@ const Vehicle: NextPage = () => {
               <XIcon size={35} />
             </Button>
           </CardHeader>
-          <CardFooter>
-            <Button className="pr-4 text-sm" size="sm" onClick={reset}>
-              <ChevronLeftIcon />
-              &nbsp;Go back
-            </Button>
-          </CardFooter>
         </Card>
       ) : (
         <Card>
@@ -125,27 +118,25 @@ const Vehicle: NextPage = () => {
                 onClick={(value) => setSelectedVehicleModel(value)}
               />
               <div className="flex flex-col gap-3">
-                <Label className="text-base sm:text-lg">
-                  Your Travel Distance
-                </Label>
+                <Label>Your Travel Distance</Label>
                 <div className="flex w-full flex-col items-center gap-4 md:flex-row md:gap-1 md:space-x-2">
                   <Input
                     type="number"
                     name="distance_value"
                     placeholder="Enter your travel distance"
-                    className="w-full text-base md:w-9/12 md:py-6 md:text-xl"
+                    className="md:w-9/12"
                     disabled={isLoading}
                     required
                   />
                   <Select name="distance_unit" disabled={isLoading} required>
-                    <SelectTrigger className="w-full border-slate-700 text-base md:w-1/4 md:py-6 md:text-xl">
+                    <SelectTrigger className="w-full border-slate-700 md:w-1/4">
                       <SelectValue placeholder="Unit" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="km" className="hover:bg-gray-200">
+                    <SelectContent className="bg-slate-800 text-white">
+                      <SelectItem value="km" className="hover:bg-slate-700">
                         Kilometer (Km)
                       </SelectItem>
-                      <SelectItem value="mi" className="hover:bg-gray-200">
+                      <SelectItem value="mi" className="hover:bg-slate-700">
                         Mile (Mi)
                       </SelectItem>
                     </SelectContent>
@@ -154,9 +145,8 @@ const Vehicle: NextPage = () => {
               </div>
               <div className="mt-2 flex justify-end gap-4">
                 <Button
-                  size="lg"
                   disabled={isLoading || !selectedVehicleModel}
-                  className="text-semibold w-full text-sm md:w-auto md:text-lg"
+                  className="text-semibold w-full md:w-auto"
                 >
                   {isLoading ? (
                     <>
