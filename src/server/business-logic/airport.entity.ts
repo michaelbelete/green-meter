@@ -1,29 +1,13 @@
 import { prisma } from "@/server/db";
 import type {
   ValidationSchemaSearchAirport,
-  ValidationSchemaShowRandomAirport,
+  ValidationSchemaShowAirport,
 } from "@/server/api/validation-schemas/airport.schema";
 import { type Airports } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 
 export default class AirportEntity {
-  async search(input: ValidationSchemaSearchAirport) {
-    const airports = await prisma.airports.findMany({
-      take: input.limit,
-      where: {
-        name: {
-          contains: input.name.toLowerCase(),
-          mode: "insensitive",
-        },
-      },
-    });
-
-    this.validateIfAirportExists(airports);
-
-    return airports;
-  }
-
-  async showRandomAirport(input: ValidationSchemaShowRandomAirport) {
+  async show(input: ValidationSchemaShowAirport) {
     const airports = await prisma.airports.findMany({
       take: input.limit,
     });
@@ -38,5 +22,21 @@ export default class AirportEntity {
         message: "Airport not found",
       });
     }
+  }
+
+  async searchAirports(input: ValidationSchemaSearchAirport) {
+    const airports = await prisma.airports.findMany({
+      take: input.limit,
+      where: {
+        name: {
+          contains: input.name.toLowerCase(),
+          mode: "insensitive",
+        },
+      },
+    });
+
+    this.validateIfAirportExists(airports);
+
+    return airports;
   }
 }

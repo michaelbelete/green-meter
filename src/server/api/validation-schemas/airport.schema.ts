@@ -5,7 +5,7 @@ export const validationSchemaSearchAirport = z.object({
   limit: z.number().min(1).max(20).default(10),
 });
 
-export const validationSchemaShowRandomAirport = z.object({
+export const validationSchemaShowAirport = z.object({
   limit: z.number().min(1).max(20).default(5),
 });
 
@@ -13,6 +13,6 @@ export type ValidationSchemaSearchAirport = z.TypeOf<
   typeof validationSchemaSearchAirport
 >;
 
-export type ValidationSchemaShowRandomAirport = z.TypeOf<
-  typeof validationSchemaShowRandomAirport
+export type ValidationSchemaShowAirport = z.TypeOf<
+  typeof validationSchemaShowAirport
 >;
