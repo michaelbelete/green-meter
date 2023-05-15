@@ -9,6 +9,9 @@
     "lint": "next lint",
     "start": "next start"
   },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
   "dependencies": {
     "@clerk/nextjs": "^4.17.3",
     "@hookform/resolvers": "^3.1.0",
