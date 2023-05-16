@@ -1,11 +1,9 @@
 import { carbonApi } from "@/lib/carbonApi";
 import {
-  type VehicleModelResponse,
   type VehicleMakeResponse,
-} from "@/lib/types/vehicle.type";
-import {
   type ValidationSchemaGetVehicleModels,
   type ValidationSchemaSearchVehicleMakes,
+  type VehicleModelResponse,
 } from "@/server/api/validation-schemas/vehicle.schema";
 
 export default class VehicleEntity {
