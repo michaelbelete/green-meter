@@ -26,24 +26,6 @@ export type ValidationSchemaEstimateVehicleEmission = z.TypeOf<
   typeof validationSchemaEstimateVehicleEmission
 >;
 
-export type FlightEstimationResponse = {
-  data: {
-    id: string;
-    type: string;
-    attributes: {
-      passengers: number;
-      legs: ValidationSchemaEstimateFlightEmission["legs"][];
-      distance_value: number;
-      distance_unit: string;
-      estimated_at: string;
-      carbon_g: number;
-      carbon_lb: number;
-      carbon_kg: number;
-      carbon_mt: number;
-    };
-  };
-};
-
 export type VehicleEstimationResponse = {
   data: {
     id: string;
