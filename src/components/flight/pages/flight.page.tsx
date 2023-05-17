@@ -44,12 +44,14 @@ const FlightPage = () => {
   } = api.estimateFlight.show.useMutation();
 
   const estimateFlightEmission = (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("form");
     e.preventDefault();
     if (!from || !to) return;
 
     const formData = new FormData(e.currentTarget);
 
     const isOneWay = formData.get("oneWay") === "on";
+    console.log("run");
     estimateMutation({
       type: "flight",
       passengers: Number(formData.get("passengers")),
@@ -172,7 +174,7 @@ const FlightPage = () => {
               </div>
               <div className="mt-2 flex justify-end gap-4">
                 <Button
-                  type="button"
+                  type="submit"
                   variant="default"
                   className="text-semibold text-white"
                   disabled={isLoading}

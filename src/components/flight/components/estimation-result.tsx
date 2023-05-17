@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -73,15 +74,16 @@ const EstimationsResult: FunctionComponent<EstimationsResultProps> = ({
             </li>
           </ul>
         </CardContent>
+        <CardFooter>
+          <Link
+            href="https://www.icao.int/environmental-protection/CarbonOffset/Documents/Methodology%20ICAO%20Carbon%20Calculator_v11-2018.pdf"
+            target="_blank"
+            className="mt-6 hover:underline"
+          >
+            Learn more about&nbsp;carbon emissions calculator methodology
+          </Link>
+        </CardFooter>
       </Card>
-
-      <Link
-        href="https://www.icao.int/environmental-protection/CarbonOffset/Documents/Methodology%20ICAO%20Carbon%20Calculator_v11-2018.pdf"
-        target="_blank"
-        className="mt-4 hover:underline"
-      >
-        Learn more about&nbsp;carbon emissions calculator methodology
-      </Link>
     </>
   );
 };

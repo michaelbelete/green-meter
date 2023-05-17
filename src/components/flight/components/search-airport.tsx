@@ -78,7 +78,7 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
 
     return airports.map((airport) => (
       <li
-        className="flex cursor-pointer items-center gap-2 px-4 py-1 text-sm hover:bg-slate-700"
+        className="flex cursor-pointer items-center gap-2 px-5 py-1 text-sm hover:bg-gray-100 hover:duration-200"
         key={airport.id}
         onClick={() => {
           onClick(airport.iata_code);
