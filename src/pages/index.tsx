@@ -5,21 +5,27 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 
-const Home: NextPage = () => {
+const Home: NextPage = (props) => {
   return (
     <>
       <NavigationHomepage />
       <main className="flex items-center justify-center px-4 text-center sm:px-8 ">
         <div className="mt-20 flex max-w-[1100px] flex-col items-center justify-center gap-2 text-center">
+          <Image
+            src="/image/logo-icon.svg"
+            alt="logo"
+            width={200}
+            height={100}
+          />
           <h1 className="text-3xl font-extrabold leading-tight tracking-tighter md:text-5xl lg:text-6xl lg:leading-[1.1]">
-            A better way to [placeholder]
+            Your partner in fighting climate change
           </h1>
           <p className="max-w-[640px] text-lg text-slate-700 dark:text-slate-400 sm:text-xl">
-            Luno is ultimate tool for building minimum viable products at
-            lightning speed.
+            Green Meter is a carbon calculator designed to estimate your carbon
+            footprint
           </p>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <Link href="/sign-up">
+            <Link href="/flight">
               <Button size="lg">Get started</Button>
             </Link>
           </div>
