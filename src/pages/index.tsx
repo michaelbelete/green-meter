@@ -25,7 +25,7 @@ const Home: NextPage = () => {
             footprint
           </p>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <Link href="/flight">
+            <Link href="/sign-up">
               <Button size="lg">Get started</Button>
             </Link>
           </div>
