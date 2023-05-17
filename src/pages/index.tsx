@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 
-const Home: NextPage = () => {
+const Home: NextPage = (props) => {
   return (
     <>
       <NavigationHomepage />
@@ -25,7 +25,7 @@ const Home: NextPage = () => {
             footprint
           </p>
           <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-            <Link href="/sign-up">
+            <Link href="/flight">
               <Button size="lg">Get started</Button>
             </Link>
           </div>
