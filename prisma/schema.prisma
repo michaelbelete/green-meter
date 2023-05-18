@@ -12,24 +12,3 @@ model Airports {
   name      String
   iata_code String
 }
-
-model ExamplePost {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  title     String
-  content   String
-  authorId  String
-
-  @@index([authorId])
-}
-
-model ExampleComment {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  content   String
-  authorId  String
-  postId    String
-
-  @@index([authorId])
-  @@index([postId])
-}
