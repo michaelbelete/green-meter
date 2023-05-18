@@ -20,9 +20,10 @@ To install Green Meter, follow these steps:
 1. Create `.env` file (copy `.env.example`)
 2. Create postgres database (e.g. via https://www.elephantsql.com/)
 3. Sign up to https://clerk.com/ and add your api keys to env file
-4. Run `npm i`
-5. Run `npm prisma db push`
-6. Run `npm run dev`
+4. Sign up to https://docs.carboninterface.com/ and add api key
+5. Run `npm i`
+6. Run `npm prisma db push`
+7. Run `npm run dev`
 
 ## Technologies Used
 
