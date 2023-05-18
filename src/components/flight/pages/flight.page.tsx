@@ -23,14 +23,14 @@ import {
   SelectValue,
   SelectContent,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { api } from "@/lib/api";
 import SearchAirport from "@/components/flight/components/search-airport";
 import { type Airports } from "@prisma/client";
 import EstimationsResult from "@/components/flight/components/estimation-result";
 
-const FlightPage = () => {
+const FlightPage = (props) => {
   const [from, setFrom] = useState<Airports["iata_code"]>();
   const [to, setTo] = useState<Airports["iata_code"]>();
 
@@ -43,15 +43,14 @@ const FlightPage = () => {
     reset,
   } = api.estimateFlight.show.useMutation();
 
-  const estimateFlightEmission = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log("form");
+  const estimateFlightEmission = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!from || !to) return;
 
     const formData = new FormData(e.currentTarget);
 
     const isOneWay = formData.get("oneWay") === "on";
-    console.log("run");
+
     estimateMutation({
       type: "flight",
       passengers: Number(formData.get("passengers")),
@@ -104,7 +103,7 @@ const FlightPage = () => {
           <CardContent>
             <form
               className="flex flex-col gap-4"
-              onSubmit={(e) => void estimateFlightEmission(e)}
+              onSubmit={(e) => estimateFlightEmission(e)}
             >
               <div className="flex flex-col items-center gap-2 md:flex-row  md:gap-4 ">
                 <SearchAirport name="from" onClick={setFrom} />
@@ -156,7 +155,6 @@ const FlightPage = () => {
                   />
                 </div>
               </div>
-
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="one-way"

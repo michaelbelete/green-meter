@@ -11,7 +11,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        <title>App</title>
+        <title>Green Meter</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <ClerkProvider

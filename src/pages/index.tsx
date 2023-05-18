@@ -1,5 +1,4 @@
 import { type NextPage } from "next";
-
 import { NavigationHomepage } from "@/components/layout/navigation-homepage";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

@@ -2,8 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
 import { PlaneTakeoffIcon } from "lucide-react";
-import type { NextPage } from "next";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, type ChangeEvent } from "react";
 import debounce from "lodash.debounce";
 import { type Airports } from "@prisma/client";
 import Dropdown, { type DropdownRef } from "@/components/ui/custom-dropdown";
@@ -13,33 +12,22 @@ type SearchAirportProps = {
   onClick: (value: string) => void;
 };
 
-const SearchAirport: NextPage<SearchAirportProps> = ({
-  name,
-  onClick,
-}: SearchAirportProps) => {
+const SearchAirport: React.FC<SearchAirportProps> = ({ name, onClick }) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [iataCode, setIataCode] = useState<string>("");
 
   const dropdownRef = useRef<DropdownRef>(null);
 
-  const {
-    data: searchResults,
-    error: searchResultError,
-    isLoading: isSearchResultLoading,
-  } = api.searchAirport.show.useQuery({
+  const searchAirportQuery = api.searchAirport.show.useQuery({
     name: searchTerm,
     limit: 8,
   });
 
-  const {
-    data: suggestedAirports,
-    error: suggestedAirportsError,
-    isLoading: isSuggestedAirportLoading,
-  } = api.airport.show.useQuery({
+  const suggestedAirportQuery = api.airport.show.useQuery({
     limit: 8,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
@@ -53,15 +41,17 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
     };
   });
 
-  type renderAirportListProp = {
+  type RenderAirportListProps = {
     airports?: Airports[];
     isLoading: boolean;
-    error: typeof searchResultError;
+    error: typeof searchAirportQuery.error;
   };
 
-  const renderAirportList = (props: renderAirportListProp) => {
-    const { isLoading, error, airports } = props;
-
+  const renderAirportList = ({
+    airports,
+    isLoading,
+    error,
+  }: RenderAirportListProps) => {
     if (isLoading) {
       return <li className="px-4 text-sm">Loading...</li>;
     }
@@ -70,7 +60,9 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
       return <li className="px-4 text-sm">{error.message}</li>;
     }
 
-    if (!airports) return;
+    if (!airports) {
+      return;
+    }
 
     if (airports.length === 0) {
       return <li className="px-4 text-sm">No airport found</li>;
@@ -125,14 +117,14 @@ const SearchAirport: NextPage<SearchAirportProps> = ({
       <ul className="flex flex-col gap-1">
         {searchTerm
           ? renderAirportList({
-              airports: searchResults,
-              error: searchResultError,
-              isLoading: isSearchResultLoading,
+              airports: searchAirportQuery.data,
+              error: searchAirportQuery.error,
+              isLoading: searchAirportQuery.isLoading,
             })
           : renderAirportList({
-              airports: suggestedAirports,
-              error: suggestedAirportsError,
-              isLoading: isSuggestedAirportLoading,
+              airports: suggestedAirportQuery.data,
+              error: suggestedAirportQuery.error,
+              isLoading: suggestedAirportQuery.isLoading,
             })}
       </ul>
     </Dropdown>
