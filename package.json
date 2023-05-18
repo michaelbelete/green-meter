@@ -2,6 +2,7 @@
   "name": "green-meter",
   "version": "0.1.0",
   "private": true,
+  "author": "Michael Belete",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
