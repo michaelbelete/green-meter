@@ -29,8 +29,9 @@ import { api } from "@/lib/api";
 import SearchAirport from "@/components/flight/components/search-airport";
 import { type Airports } from "@prisma/client";
 import EstimationsResult from "@/components/flight/components/estimation-result";
+import { type NextPage } from "next";
 
-const FlightPage = (props) => {
+const FlightPage: NextPage = () => {
   const [from, setFrom] = useState<Airports["iata_code"]>();
   const [to, setTo] = useState<Airports["iata_code"]>();
 

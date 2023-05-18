@@ -1,4 +1,3 @@
-import Dropdown, { type DropdownRef } from "@/components/ui/custom-dropdown";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
@@ -6,17 +5,18 @@ import { CarIcon, FactoryIcon } from "lucide-react";
 import { type NextPage } from "next";
 import { useEffect, useState, useMemo, useRef } from "react";
 import debounce from "lodash.debounce";
+import Dropdown, { type DropdownRef } from "@/components/ui/custom-dropdown";
 
 type SearchVehicleModelProps = {
   onClick: (value: string) => void;
 };
 
-type selectedVehicleMake = {
+type SelectedVehicleMake = {
   id: string;
   name: string;
 };
 
-type selectedVehicleModel = {
+type SelectedVehicleModel = {
   id: string;
   name: string;
 };
@@ -27,10 +27,12 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
   const vehicleManufacturerRef = useRef<DropdownRef>(null);
   const vehicleModelRef = useRef<DropdownRef>(null);
 
-  const [selectedVehicleMake, setSelectedVehicleMake] =
-    useState<selectedVehicleMake>();
-  const [selectedVehicleModel, setSelectedVehicleModel] =
-    useState<selectedVehicleModel>();
+  const [selectedVehicleMake, setSelectedVehicleMake] = useState<
+    SelectedVehicleMake | undefined
+  >();
+  const [selectedVehicleModel, setSelectedVehicleModel] = useState<
+    SelectedVehicleModel | undefined
+  >();
   const [searchVehicleManufacturer, setSearchVehicleManufacturer] =
     useState<string>("");
   const [searchVehicleModel, setSearchVehicleModel] = useState<string>("");
@@ -40,9 +42,7 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
     isLoading: isLoadingVehicleMake,
     isError: isErrorVehicleMake,
     error: errorVehicleMake,
-  } = api.searchVehicleMake.show.useQuery({
-    name: searchVehicleManufacturer,
-  });
+  } = api.searchVehicleMake.show.useQuery({ name: searchVehicleManufacturer });
 
   const {
     data: vehicleModelsResponse,
@@ -123,7 +123,7 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
       : vehicleModelsResponse;
 
     if (vehicleModels.length === 0) {
-      return <li className="px-4">Can not find the model</li>;
+      return <li className="px-4">Can not find the vehicle model</li>;
     }
 
     return vehicleModels.slice(0, 8).map((vehicle) => (
