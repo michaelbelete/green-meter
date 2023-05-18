@@ -1,8 +1,7 @@
 import Head from "next/head";
 import { type AppType } from "next/app";
-
+import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "@/components/ui/toaster";
-
 import { api } from "@/lib/api";
 
 import "@/styles/globals.css";
@@ -12,7 +11,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        <title>App</title>
+        <title>Green Meter</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <ClerkProvider
@@ -33,6 +32,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
         }}
       >
         <Component {...pageProps} />
+        <Analytics />
         <Toaster />
       </ClerkProvider>
     </>

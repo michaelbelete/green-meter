@@ -21,7 +21,7 @@ const Layout = ({
         <main
           className={`${
             noPadding ? "" : "px-3 md:px-12 md:py-5"
-          } relative h-full w-full overflow-y-auto`}
+          } relative h-full w-full overflow-y-auto bg-gray-50`}
         >
           {!fullScreenOnMobile && <div className="pt-3 md:pt-0" />}
           {children}

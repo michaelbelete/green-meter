@@ -11,8 +11,13 @@ const NavigationHomepage = () => {
         <div className="flex">
           <Link href="/" className="flex cursor-pointer items-center">
             <div className="flex cursor-pointer items-center gap-2">
-              <Image src="/logo.svg" alt="logo" width={22} height={22} />
-              <div className="font-bold">luno</div>
+              <Image
+                src="/image/logo-icon.svg"
+                alt="logo"
+                width={25}
+                height={25}
+              />
+              <div className="text-lg font-bold">Green Meter</div>
             </div>
           </Link>
         </div>
@@ -29,7 +34,7 @@ const NavigationRight = () => {
 
   if (isSignedIn) {
     return (
-      <Link href="/dashboard">
+      <Link href="/flight">
         <Button>
           Dashboard
           <ArrowRight className="ml-2 h-4 w-4" />
