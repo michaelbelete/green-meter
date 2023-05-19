@@ -26,22 +26,26 @@ export type ValidationSchemaEstimateVehicleEmission = z.TypeOf<
   typeof validationSchemaEstimateVehicleEmission
 >;
 
-export type VehicleEstimationResponse = {
-  data: {
-    id: string;
-    type: string;
-    attributes: {
-      distance_value: number;
-      vehicle_make: string;
-      vehicle_model: string;
-      vehicle_year: number;
-      vehicle_model_id: string;
-      distance_unit: string;
-      estimated_at: string;
-      carbon_g: number;
-      carbon_lb: number;
-      carbon_kg: number;
-      carbon_mt: number;
-    };
-  };
-};
+export const validationSchemaVehicleEstimationResponse = z.object({
+  data: z.object({
+    id: z.string(),
+    type: z.string(),
+    attributes: z.object({
+      distance_value: z.number(),
+      vehicle_make: z.string(),
+      vehicle_model: z.string(),
+      vehicle_year: z.number(),
+      vehicle_model_id: z.string(),
+      distance_unit: z.string(),
+      estimated_at: z.string(),
+      carbon_g: z.number(),
+      carbon_lb: z.number(),
+      carbon_kg: z.number(),
+      carbon_mt: z.number(),
+    }),
+  }),
+});
+
+export type VehicleEstimationResponse = z.TypeOf<
+  typeof validationSchemaVehicleEstimationResponse
+>;

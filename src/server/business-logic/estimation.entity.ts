@@ -4,6 +4,8 @@ import {
   type ValidationSchemaEstimateVehicleEmission,
   type ValidationSchemaEstimateFlightEmission,
   type VehicleEstimationResponse,
+  validationSchemaVehicleEstimationResponse,
+  validationSchemaEstimateFlightEmission,
 } from "@/server/api/validation-schemas/estimation.schema";
 
 export class EstimationEntity {
@@ -19,7 +21,9 @@ export class EstimationEntity {
       }
     );
 
-    return data;
+    const validatedData = validationSchemaEstimateFlightEmission.parse(data);
+
+    return validatedData;
   }
 
   async estimateVehicleEmissions(
@@ -36,6 +40,9 @@ export class EstimationEntity {
         vehicle_model_id,
       }
     );
-    return data;
+
+    const validatedData = validationSchemaVehicleEstimationResponse.parse(data);
+
+    return validatedData;
   }
 }

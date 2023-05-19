@@ -6,9 +6,15 @@ import { type NextPage } from "next";
 import { useEffect, useState, useMemo, useRef } from "react";
 import debounce from "lodash.debounce";
 import Dropdown, { type DropdownRef } from "@/components/ui/custom-dropdown";
+import { type ValidationSchemaEstimateVehicleEmission } from "@/server/api/validation-schemas/estimation.schema";
+import { type UseFormReturn } from "react-hook-form";
+
+type Form = UseFormReturn<ValidationSchemaEstimateVehicleEmission>;
 
 type SearchVehicleModelProps = {
   onClick: (value: string) => void;
+  register: Form["register"];
+  formState: Form["formState"];
 };
 
 type SelectedVehicleMake = {
@@ -23,6 +29,8 @@ type SelectedVehicleModel = {
 
 const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
   onClick,
+  register,
+  formState,
 }: SearchVehicleModelProps) => {
   const vehicleManufacturerRef = useRef<DropdownRef>(null);
   const vehicleModelRef = useRef<DropdownRef>(null);
@@ -148,53 +156,25 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
   };
 
   return (
-    <div
-      className={`${
-        selectedVehicleMake ? "flex flex-col gap-2 md:flex-row md:gap-4" : ""
-      }`}
-    >
-      <Dropdown
-        ref={vehicleManufacturerRef}
-        trigger={
-          <>
-            <Label htmlFor="vehicle-model">Your vehicle manufacturer</Label>
-            <Input
-              type="text"
-              name="vehicle-manufacturer"
-              required={true}
-              placeholder="Vehicle manufacturer"
-              className="!opacity-100"
-              value={selectedVehicleMake?.name}
-              disabled={true}
-              style={{ cursor: "pointer" }}
-            />
-          </>
-        }
+    <div className="w-full">
+      <div
+        className={`${
+          selectedVehicleMake
+            ? "flex w-full flex-col gap-2 md:flex-row md:gap-4"
+            : ""
+        }`}
       >
-        <div className="px-4">
-          <Input
-            type="search"
-            placeholder="Search Vehicle Manufacturer"
-            className="w-full font-normal"
-            onChange={debouncedVehicleMakeResults}
-          />
-        </div>
-        <ul className="flex flex-col gap-1">{renderVehicleManufacturer()}</ul>
-      </Dropdown>
-
-      {selectedVehicleMake && (
         <Dropdown
-          ref={vehicleModelRef}
+          ref={vehicleManufacturerRef}
           trigger={
             <>
-              <Label htmlFor="vehicle-model">Your vehicle model</Label>
+              <Label htmlFor="vehicle-model">Your vehicle manufacturer</Label>
               <Input
                 type="text"
-                name="vehicle-model"
                 required={true}
-                placeholder="Vehicle model"
+                placeholder="Vehicle manufacturer"
                 className="!opacity-100"
-                value={selectedVehicleModel?.name}
+                value={selectedVehicleMake?.name}
                 disabled={true}
                 style={{ cursor: "pointer" }}
               />
@@ -203,15 +183,64 @@ const SearchVehicleModel: NextPage<SearchVehicleModelProps> = ({
         >
           <div className="px-4">
             <Input
-              placeholder="Search Vehicle Model"
-              value={searchVehicleModel}
+              type="search"
+              placeholder="Search Vehicle Manufacturer"
               className="w-full font-normal"
-              onChange={(e) => setSearchVehicleModel(e.target.value)}
+              onChange={debouncedVehicleMakeResults}
             />
           </div>
-          <ul className="flex flex-col gap-1">{renderVehicleModel()}</ul>
+          <ul className="flex flex-col gap-1">{renderVehicleManufacturer()}</ul>
         </Dropdown>
-      )}
+
+        {selectedVehicleMake && (
+          <Dropdown
+            ref={vehicleModelRef}
+            trigger={
+              <>
+                <Label htmlFor="vehicle-model">Your vehicle model</Label>
+                <Input
+                  type="text"
+                  required={true}
+                  placeholder="Vehicle model"
+                  className="!opacity-100"
+                  value={selectedVehicleModel?.name}
+                  disabled={true}
+                  style={{ cursor: "pointer" }}
+                />
+                <Input
+                  type="hidden"
+                  required={true}
+                  placeholder="Vehicle model"
+                  className="!opacity-100"
+                  value={selectedVehicleModel?.id}
+                  disabled={true}
+                  style={{ cursor: "pointer" }}
+                  {...register("vehicle_model_id")}
+                />
+              </>
+            }
+          >
+            <div className="px-4">
+              <Input
+                placeholder="Search Vehicle Model"
+                value={searchVehicleModel}
+                className="w-full font-normal"
+                onChange={(e) => setSearchVehicleModel(e.target.value)}
+              />
+            </div>
+            <ul className="flex flex-col gap-1">{renderVehicleModel()}</ul>
+          </Dropdown>
+        )}
+      </div>
+      <div className={`flex ${selectedVehicleMake ? "justify-end" : ""}`}>
+        {formState.errors.vehicle_model_id?.message && (
+          <p className="text-red-600">
+            {formState.errors.vehicle_model_id?.message === "Required"
+              ? "Vehicle model is required"
+              : formState.errors.vehicle_model_id?.message}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

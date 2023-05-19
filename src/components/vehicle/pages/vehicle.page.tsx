@@ -21,31 +21,22 @@ import {
 import { api } from "@/lib/api";
 import { CarIcon, Loader2Icon, XIcon } from "lucide-react";
 import SearchVehicleModel from "@/components/vehicle/components/search-vehicle-model";
-import { type VehicleEstimationResponse } from "@/server/api/validation-schemas/estimation.schema";
+import {
+  validationSchemaEstimateVehicleEmission,
+  type VehicleEstimationResponse,
+} from "@/server/api/validation-schemas/estimation.schema";
 import { type NextPage } from "next";
+import { useZodForm } from "@/hooks/use-zod-form";
+import { handlePromise } from "@/lib/utils";
 
 const VehiclePage: NextPage = () => {
   const [selectedVehicleModel, setSelectedVehicleModel] = useState<string>("");
 
   const estimateVehicleMutation = api.estimateVehicle.show.useMutation();
 
-  const estimateVehicleEmission = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const distance_unit = formData.get("distance_unit")?.toString();
-    const distance_value = Number(formData.get("distance_value"));
-
-    if (!distance_unit || !distance_value) return;
-    if (distance_unit !== "km" && distance_unit !== "mi") return;
-
-    estimateVehicleMutation.mutate({
-      type: "vehicle",
-      distance_unit,
-      distance_value,
-      vehicle_model_id: selectedVehicleModel,
-    });
-  };
+  const form = useZodForm({
+    schema: validationSchemaEstimateVehicleEmission,
+  });
 
   const renderErrorAlert = () => (
     <Alert className="mb-4" variant="destructive">
@@ -105,48 +96,62 @@ const VehiclePage: NextPage = () => {
 
       <CardContent>
         <form
-          onSubmit={estimateVehicleEmission}
+          onSubmit={handlePromise(
+            form.handleSubmit((data) => console.log("form", data))
+          )}
           className="flex flex-col gap-4"
         >
-          <SearchVehicleModel onClick={setSelectedVehicleModel} />
+          <SearchVehicleModel
+            onClick={setSelectedVehicleModel}
+            register={form.register}
+            formState={form.formState}
+          />
 
           <div className="flex flex-col gap-3">
             <Label>Your Travel Distance</Label>
             <div className="flex w-full flex-col items-center gap-4 md:flex-row md:gap-1 md:space-x-2">
-              <Input
-                type="number"
-                name="distance_value"
-                placeholder="Enter your travel distance"
-                className="md:w-9/12"
-                disabled={estimateVehicleMutation.isLoading}
-                required
-              />
-
-              <Select
-                name="distance_unit"
-                disabled={estimateVehicleMutation.isLoading}
-                required
-              >
-                <SelectTrigger className="w-full md:w-1/4">
-                  <SelectValue placeholder="Unit" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="km" className="hover:bg-slate-700">
-                    Kilometer (Km)
-                  </SelectItem>
-                  <SelectItem value="mi" className="hover:bg-slate-700">
-                    Mile (Mi)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="md:w-9/12">
+                <Input
+                  type="number"
+                  placeholder="Enter your travel distance"
+                  disabled={estimateVehicleMutation.isLoading}
+                  {...form.register("distance_value", { valueAsNumber: true })}
+                />
+                {form.formState.errors.distance_value?.message && (
+                  <p className="text-red-600">
+                    {form.formState.errors.distance_value?.message}
+                  </p>
+                )}
+              </div>
+              <div className="w-full md:w-1/4">
+                <Select
+                  disabled={estimateVehicleMutation.isLoading}
+                  {...form.register("distance_unit")}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Unit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="km" className="hover:bg-slate-700">
+                      Kilometer (Km)
+                    </SelectItem>
+                    <SelectItem value="mi" className="hover:bg-slate-700">
+                      Mile (Mi)
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {form.formState.errors.distance_unit?.message && (
+                  <p className="text-red-600">
+                    {form.formState.errors.distance_unit?.message}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="mt-2 flex justify-end gap-4">
             <Button
-              disabled={
-                estimateVehicleMutation.isLoading || !selectedVehicleModel
-              }
+              type="submit"
               className="text-semibold w-full text-white md:w-auto"
             >
               {estimateVehicleMutation.isLoading ? (
