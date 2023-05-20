@@ -7,16 +7,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { type FlightEstimationResponse } from "@/lib/types/flight.type";
 import {
   calculateFlightDuration,
   convertKilometersToMiles,
 } from "@/components/flight/utils/calculate";
 import { XIcon } from "lucide-react";
 import Link from "next/link";
+import { type FlightEstimationResponse } from "@/server/api/validation-schemas/airport.schema";
 
 type EstimationsResultProps = {
-  estimationResult: FlightEstimationResponse;
+  estimationResult: FlightEstimationResponse["data"];
   reset: () => void;
 };
 
@@ -24,7 +24,7 @@ const EstimationsResult: React.FC<EstimationsResultProps> = ({
   estimationResult,
   reset,
 }: EstimationsResultProps) => {
-  const { attributes } = estimationResult.data;
+  const { attributes } = estimationResult;
 
   const isOneWayTrip = attributes.legs?.length === 1;
   const departureAirport = attributes.legs[0]?.departure_airport;

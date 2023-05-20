@@ -7,6 +7,7 @@ export const validationSchemaEstimateFlightEmission = z.object({
     z.object({
       departure_airport: z.string().max(3),
       destination_airport: z.string().max(3),
+      cabin_class: z.enum(["economy", "premium"]),
     })
   ),
 });

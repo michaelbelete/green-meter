@@ -21,30 +21,35 @@ import {
 import { api } from "@/lib/api";
 import { CarIcon, Loader2Icon, XIcon } from "lucide-react";
 import SearchVehicleModel from "@/components/vehicle/components/search-vehicle-model";
-import { type VehicleEstimationResponse } from "@/server/api/validation-schemas/estimation.schema";
+import {
+  type ValidationSchemaEstimateVehicleEmission,
+  type VehicleEstimationResponse,
+} from "@/server/api/validation-schemas/estimation.schema";
 import { type NextPage } from "next";
 
 const VehiclePage: NextPage = () => {
-  const [selectedVehicleModel, setSelectedVehicleModel] = useState<string>("");
+  const [distanceUnit, setDistanceUnit] =
+    useState<ValidationSchemaEstimateVehicleEmission["distance_unit"]>("km");
+  const [distanceValue, setDistanceValue] =
+    useState<ValidationSchemaEstimateVehicleEmission["distance_value"]>();
+  const [selectedVehicleModel, setSelectedVehicleModel] =
+    useState<ValidationSchemaEstimateVehicleEmission["vehicle_model_id"]>("");
 
   const estimateVehicleMutation = api.estimateVehicle.show.useMutation();
 
-  const estimateVehicleEmission = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const distance_unit = formData.get("distance_unit")?.toString();
-    const distance_value = Number(formData.get("distance_value"));
-
-    if (!distance_unit || !distance_value) return;
-    if (distance_unit !== "km" && distance_unit !== "mi") return;
+  const estimateVehicleEmission = () => {
+    if (!selectedVehicleModel || !distanceValue || !distanceUnit) return;
 
     estimateVehicleMutation.mutate({
       type: "vehicle",
-      distance_unit,
-      distance_value,
+      distance_unit: distanceUnit,
+      distance_value: distanceValue,
       vehicle_model_id: selectedVehicleModel,
     });
+
+    setDistanceUnit("km");
+    setDistanceValue(undefined);
+    setSelectedVehicleModel("");
   };
 
   const renderErrorAlert = () => (
@@ -103,66 +108,71 @@ const VehiclePage: NextPage = () => {
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
-        <form
-          onSubmit={estimateVehicleEmission}
-          className="flex flex-col gap-4"
-        >
-          <SearchVehicleModel onClick={setSelectedVehicleModel} />
+      <CardContent className="flex flex-col gap-4">
+        <SearchVehicleModel onClick={setSelectedVehicleModel} />
 
-          <div className="flex flex-col gap-3">
-            <Label>Your Travel Distance</Label>
-            <div className="flex w-full flex-col items-center gap-4 md:flex-row md:gap-1 md:space-x-2">
-              <Input
-                type="number"
-                name="distance_value"
-                placeholder="Enter your travel distance"
-                className="md:w-9/12"
-                disabled={estimateVehicleMutation.isLoading}
-                required
-              />
+        <div className="flex flex-col gap-3">
+          <Label>Your Travel Distance</Label>
+          <div className="flex w-full flex-col items-center gap-4 md:flex-row md:gap-1 md:space-x-2">
+            <Input
+              type="number"
+              name="distance_value"
+              placeholder="Enter your travel distance"
+              className="md:w-9/12"
+              disabled={estimateVehicleMutation.isLoading}
+              onChange={(e) => {
+                setDistanceValue(Number(e.currentTarget.value));
+              }}
+              value={distanceValue}
+            />
 
-              <Select
-                name="distance_unit"
-                disabled={estimateVehicleMutation.isLoading}
-                required
-              >
-                <SelectTrigger className="w-full md:w-1/4">
-                  <SelectValue placeholder="Unit" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="km" className="hover:bg-slate-700">
-                    Kilometer (Km)
-                  </SelectItem>
-                  <SelectItem value="mi" className="hover:bg-slate-700">
-                    Mile (Mi)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="mt-2 flex justify-end gap-4">
-            <Button
-              disabled={
-                estimateVehicleMutation.isLoading || !selectedVehicleModel
-              }
-              className="text-semibold w-full text-white md:w-auto"
+            <Select
+              name="distance_unit"
+              disabled={estimateVehicleMutation.isLoading}
+              value={distanceUnit}
+              onValueChange={(
+                value: ValidationSchemaEstimateVehicleEmission["distance_unit"]
+              ) => setDistanceUnit(value)}
             >
-              {estimateVehicleMutation.isLoading ? (
-                <>
-                  <Loader2Icon className="animate-spin" />
-                  &nbsp;Estimating...
-                </>
-              ) : (
-                <>
-                  <CarIcon />
-                  &nbsp;Get estimation
-                </>
-              )}
-            </Button>
+              <SelectTrigger className="w-full md:w-1/4">
+                <SelectValue placeholder="Unit" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="km" className="hover:bg-slate-700">
+                  Kilometer (Km)
+                </SelectItem>
+                <SelectItem value="mi" className="hover:bg-slate-700">
+                  Mile (Mi)
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-        </form>
+        </div>
+
+        <div className="mt-2 flex justify-end gap-4">
+          <Button
+            disabled={
+              estimateVehicleMutation.isLoading ||
+              !selectedVehicleModel ||
+              !distanceValue ||
+              !distanceUnit
+            }
+            className="text-semibold w-full text-white md:w-auto"
+            onClick={() => void estimateVehicleEmission()}
+          >
+            {estimateVehicleMutation.isLoading ? (
+              <>
+                <Loader2Icon className="animate-spin" />
+                &nbsp;Estimating...
+              </>
+            ) : (
+              <>
+                <CarIcon />
+                &nbsp;Get estimation
+              </>
+            )}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

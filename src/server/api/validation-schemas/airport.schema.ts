@@ -16,3 +16,27 @@ export type ValidationSchemaSearchAirport = z.TypeOf<
 export type ValidationSchemaShowAirport = z.TypeOf<
   typeof validationSchemaShowAirport
 >;
+
+export type FlightLegs = {
+  departure_airport: string;
+  destination_airport: string;
+  cabin_class: "economy" | "premium";
+};
+
+export type FlightEstimationResponse = {
+  data: {
+    id: string;
+    type: string;
+    attributes: {
+      passengers: number;
+      legs: FlightLegs[];
+      distance_value: number;
+      distance_unit: string;
+      estimated_at: string;
+      carbon_g: number;
+      carbon_lb: number;
+      carbon_kg: number;
+      carbon_mt: number;
+    };
+  };
+};

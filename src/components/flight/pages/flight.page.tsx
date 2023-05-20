@@ -27,13 +27,19 @@ import { useState, type FormEvent } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { api } from "@/lib/api";
 import SearchAirport from "@/components/flight/components/search-airport";
-import { type Airports } from "@prisma/client";
 import EstimationsResult from "@/components/flight/components/estimation-result";
 import { type NextPage } from "next";
+import { type ValidationSchemaEstimateFlightEmission } from "@/server/api/validation-schemas/estimation.schema";
+import { type FlightLegs } from "@/server/api/validation-schemas/airport.schema";
 
 const FlightPage: NextPage = () => {
-  const [from, setFrom] = useState<Airports["iata_code"]>();
-  const [to, setTo] = useState<Airports["iata_code"]>();
+  const [from, setFrom] = useState<FlightLegs["departure_airport"]>();
+  const [to, setTo] = useState<FlightLegs["destination_airport"]>();
+  const [cabinClass, setCabinClass] =
+    useState<FlightLegs["cabin_class"]>("economy");
+  const [passengers, setPassengers] =
+    useState<ValidationSchemaEstimateFlightEmission["passengers"]>();
+  const [isOneWay, setOneWay] = useState<boolean>(false);
 
   const {
     isError,
@@ -46,25 +52,23 @@ const FlightPage: NextPage = () => {
 
   const estimateFlightEmission = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!from || !to) return;
-
-    const formData = new FormData(e.currentTarget);
-
-    const isOneWay = formData.get("oneWay") === "on";
+    if (!from || !to || !cabinClass || !passengers) return;
 
     estimateMutation({
       type: "flight",
-      passengers: Number(formData.get("passengers")),
+      passengers: passengers,
       legs: [
         {
           departure_airport: from,
           destination_airport: to,
+          cabin_class: cabinClass,
         },
         ...(!isOneWay
           ? [
               {
                 departure_airport: to,
                 destination_airport: from,
+                cabin_class: cabinClass,
               },
             ]
           : []),
@@ -91,7 +95,10 @@ const FlightPage: NextPage = () => {
           </AlertDescription>
         </Alert>
       ) : estimationResult?.data ? (
-        <EstimationsResult estimationResult={estimationResult} reset={reset} />
+        <EstimationsResult
+          estimationResult={estimationResult?.data}
+          reset={reset}
+        />
       ) : (
         <Card>
           <CardHeader>
@@ -123,6 +130,10 @@ const FlightPage: NextPage = () => {
                     required={true}
                     name="cabinClass"
                     disabled={isLoading}
+                    value={cabinClass}
+                    onValueChange={(value: FlightLegs["cabin_class"]) =>
+                      setCabinClass(value)
+                    }
                   >
                     <SelectTrigger id="cabin-class">
                       <SelectValue placeholder="Select your cabin class" />
@@ -153,6 +164,8 @@ const FlightPage: NextPage = () => {
                     required={true}
                     placeholder="Enter number of passengers"
                     disabled={isLoading}
+                    value={passengers}
+                    onChange={(e) => setPassengers(Number(e.target.value))}
                   />
                 </div>
               </div>
@@ -162,6 +175,8 @@ const FlightPage: NextPage = () => {
                   className="h-6 w-6"
                   name="oneWay"
                   disabled={isLoading}
+                  checked={isOneWay}
+                  onCheckedChange={(checked: boolean) => setOneWay(checked)}
                 />
                 <label
                   htmlFor="one-way"
@@ -176,7 +191,7 @@ const FlightPage: NextPage = () => {
                   type="submit"
                   variant="default"
                   className="text-semibold text-white"
-                  disabled={isLoading}
+                  disabled={isLoading || !from || !to || !cabinClass}
                 >
                   {isLoading ? (
                     <>

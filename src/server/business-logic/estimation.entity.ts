@@ -1,5 +1,5 @@
 import { carbonApi } from "@/lib/carbonApi";
-import { type FlightEstimationResponse } from "@/lib/types/flight.type";
+import { type FlightEstimationResponse } from "@/server/api/validation-schemas/airport.schema";
 import {
   type ValidationSchemaEstimateVehicleEmission,
   type ValidationSchemaEstimateFlightEmission,
